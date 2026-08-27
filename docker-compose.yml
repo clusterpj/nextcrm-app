@@ -109,6 +109,9 @@ services:
       # the database directly.
       TEST_USER_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
 
+      # Webhook token for the lead-ingest endpoint (create-lead-from-web).
+      NEXTCRM_TOKEN: ${NEXTCRM_TOKEN:-}
+
       # Placeholder values for optional external services.
       # The app initializes these clients at module load time, so empty
       # values cause crashes. Users override these via .env to enable

@@ -6,10 +6,12 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 
 # Enable corepack and prepare pnpm in a single layer for better caching
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.20.0 --activate
 
 # Copy lock files first (changes less frequently) for maximum cache efficiency
-COPY pnpm-lock.yaml package.json ./
+# pnpm-workspace.yaml carries the overrides the lockfile was generated with —
+# without it, --frozen-lockfile fails with ERR_PNPM_LOCKFILE_CONFIG_MISMATCH.
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
 # Install dependencies with frozen lockfile
 RUN pnpm install --frozen-lockfile
@@ -22,7 +24,7 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # Enable corepack (reuse from deps if cached)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.20.0 --activate
 
 # Copy dependencies from previous stage
 COPY --from=deps /app/node_modules ./node_modules
